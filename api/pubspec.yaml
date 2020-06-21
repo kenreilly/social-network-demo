@@ -1,0 +1,18 @@
+name: api
+description: A web server built using the shelf package.
+# version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: '>=2.7.0 <3.0.0'
+
+dependencies:
+  shelf: ^0.7.5
+  shelf_router: ^0.7.2
+  dotenv: ^1.0.0
+  postgres: ^1.0.2
+  core: 
+    path: ../core/
+
+dev_dependencies:
+  pedantic: ^1.8.0

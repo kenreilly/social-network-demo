@@ -17,9 +17,22 @@ COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 CREATE FUNCTION public.hash(str text) RETURNS text
     LANGUAGE plpgsql
     AS $_$
-BEGIN
-  RETURN crypt($1, gen_salt('bf', 8));
-END;
+    BEGIN
+        RETURN crypt($1, gen_salt('bf', 8));
+    END;
 $_$;
 
 ALTER FUNCTION public.hash(str text) OWNER TO social_demo_admin;
+
+CREATE FUNCTION public.flush() RETURNS boolean
+    LANGUAGE plpgsql
+    AS $_$
+    BEGIN
+        DELETE FROM posts WHERE create_timestamp < current_timestamp - interval '1 day';
+        DELETE FROM images WHERE is_profile = false AND create_timestamp < current_timestamp - interval '1 day';
+        return true;
+    END;
+$_$ SECURITY DEFINER;
+
+ALTER FUNCTION public.flush() OWNER TO social_demo_admin;
+GRANT EXECUTE ON FUNCTION public.flush() TO social_demo_api_role;

@@ -29,15 +29,15 @@ GRANT SELECT ON TABLE public.users TO social_demo_api_role;
 CREATE FUNCTION public.authenticate_user(email text, password_text text) RETURNS public.authenticated_user
     LANGUAGE plpgsql
     AS $_$
-DECLARE
-	user authenticated_user;
-BEGIN
-	select into user.id, user.first_name, user.last_name, user.auth_timestamp 
-		id, first_name, last_name, current_timestamp from users 
-		where users.email = $1
-		and users.password_hash = crypt($2, password_hash);
-	return user;
-END;
+	DECLARE
+		user authenticated_user;
+	BEGIN
+		select into user.id, user.first_name, user.last_name, user.auth_timestamp 
+			id, first_name, last_name, current_timestamp from users 
+			where users.email = $1
+			and users.password_hash = crypt($2, password_hash);
+		return user;
+	END;
 $_$ SECURITY DEFINER;
 
 ALTER FUNCTION public.authenticate_user(email text, password_text text) OWNER TO social_demo_admin;
@@ -45,14 +45,28 @@ ALTER FUNCTION public.authenticate_user(email text, password_text text) OWNER TO
 CREATE FUNCTION public.create_user(usr new_user) RETURNS text
     LANGUAGE plpgsql
     AS $_$
-DECLARE
-	user_id text;
-BEGIN
-	insert into public.users (email, password_hash, first_name, last_name) 
-	values (usr.email, hash(usr.password_text), usr.first_name, usr.last_name) returning id into user_id;
-	return user_id;
-END;
+	DECLARE
+		user_id text;
+	BEGIN
+		insert into public.users (email, password_hash, first_name, last_name) 
+		values (usr.email, hash(usr.password_text), usr.first_name, usr.last_name) returning id into user_id;
+		return user_id;
+	END;
 $_$ SECURITY DEFINER;
 
 ALTER FUNCTION public.create_user(usr new_user) OWNER TO social_demo_admin;
 GRANT EXECUTE ON FUNCTION public.create_user(usr new_user) TO social_demo_api_role;
+
+CREATE FUNCTION public.delete_user(user_id uuid) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $_$
+	DECLARE
+		_id boolean;
+	BEGIN
+		DELETE FROM posts WHERE id = user_id;
+		return true;
+	END;
+$_$ SECURITY DEFINER;
+
+ALTER FUNCTION public.delete_user(user_id uuid) OWNER TO social_demo_admin;
+GRANT EXECUTE ON FUNCTION public.delete_user(user_id uuid) TO social_demo_api_role;
