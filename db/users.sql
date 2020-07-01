@@ -15,20 +15,20 @@ CREATE TYPE public.new_user AS (
 ALTER TYPE public.authenticated_user OWNER TO social_demo_admin;
 
 CREATE TABLE public.users (
-    id uuid DEFAULT public.gen_random_uuid() PRIMARY KEY,
-    email character varying UNIQUE NOT NULL,
-    first_name character varying NOT NULL,
-    last_name character varying NOT NULL,
-    password_hash character varying NOT NULL,
-    create_timestamp timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+	id uuid DEFAULT public.gen_random_uuid() PRIMARY KEY,
+	email character varying UNIQUE NOT NULL,
+	first_name character varying NOT NULL,
+	last_name character varying NOT NULL,
+	password_hash character varying NOT NULL,
+	create_timestamp timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER TABLE public.users OWNER TO social_demo_admin;
 GRANT SELECT ON TABLE public.users TO social_demo_api_role;
 
 CREATE FUNCTION public.authenticate_user(email text, password_text text) RETURNS public.authenticated_user
-    LANGUAGE plpgsql
-    AS $_$
+	LANGUAGE plpgsql
+	AS $_$
 	DECLARE
 		user authenticated_user;
 	BEGIN
@@ -43,8 +43,8 @@ $_$ SECURITY DEFINER;
 ALTER FUNCTION public.authenticate_user(email text, password_text text) OWNER TO social_demo_admin;
 
 CREATE FUNCTION public.create_user(usr new_user) RETURNS text
-    LANGUAGE plpgsql
-    AS $_$
+	LANGUAGE plpgsql
+	AS $_$
 	DECLARE
 		user_id text;
 	BEGIN
@@ -58,8 +58,8 @@ ALTER FUNCTION public.create_user(usr new_user) OWNER TO social_demo_admin;
 GRANT EXECUTE ON FUNCTION public.create_user(usr new_user) TO social_demo_api_role;
 
 CREATE FUNCTION public.delete_user(user_id uuid) RETURNS boolean
-    LANGUAGE plpgsql
-    AS $_$
+	LANGUAGE plpgsql
+	AS $_$
 	DECLARE
 		_id boolean;
 	BEGIN

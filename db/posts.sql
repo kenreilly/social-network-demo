@@ -1,23 +1,23 @@
 CREATE TYPE new_post AS (
-    user_id uuid,
-    image_id uuid,
-    content character varying(2048)
+	user_id uuid,
+	image_id uuid,
+	content character varying(2048)
 );
 
 CREATE TABLE public.posts (
-    id uuid DEFAULT public.gen_random_uuid() PRIMARY KEY,
+	id uuid DEFAULT public.gen_random_uuid() PRIMARY KEY,
 	user_id uuid REFERENCES users,
 	image_id uuid REFERENCES images NULL,
 	content character varying(2048) COLLATE pg_catalog."default",
-    create_timestamp timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
+	create_timestamp timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER TABLE public.posts OWNER to social_demo_admin;
 GRANT SELECT ON TABLE public.posts TO social_demo_api_role;
 
 CREATE FUNCTION public.create_post(post new_post) RETURNS uuid
-    LANGUAGE plpgsql
-    AS $_$
+	LANGUAGE plpgsql
+	AS $_$
 	DECLARE
 		_id uuid;
 	BEGIN
@@ -31,8 +31,8 @@ ALTER FUNCTION public.create_post(post new_post) OWNER TO social_demo_admin;
 GRANT EXECUTE ON FUNCTION public.create_post(post new_post) TO social_demo_api_role;
 
 CREATE FUNCTION public.delete_post(post_id uuid) RETURNS boolean
-    LANGUAGE plpgsql
-    AS $_$
+	LANGUAGE plpgsql
+	AS $_$
 	DECLARE
 		_id boolean;
 	BEGIN

@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 psql postgres -f init.sql
 psql social_demo -f core.sql
 psql social_demo -f images.sql 
