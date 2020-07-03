@@ -1,8 +1,8 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
+/// Core library for social network demo
 library core;
 
+export 'models/auth-request.dart';
+export 'models/image.dart';
+export 'models/post.dart';
 export 'models/user.dart';
-
-// TODO: Export any libraries intended for clients of this package.
+export 'hash.dart';

@@ -1,13 +1,12 @@
-
 class Post {
 
 	Post({ this.id, this.user_id, this.image_id, this.content, this.create_timestamp });
 
-    String id;
+	String id;
 	String user_id; 
 	String image_id;
 	String content;
-    String create_timestamp;
+	String create_timestamp;
 
 	static Post fromJSON(Map<String, dynamic> map) {
 

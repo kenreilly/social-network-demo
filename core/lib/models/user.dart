@@ -1,4 +1,3 @@
-
 class User {
 
 	User({ this.id, this.first_name, this.last_name });
@@ -27,12 +26,19 @@ class AuthenticatedUser extends User {
 	static User fromJSON(Map<String, dynamic> map) {
 
 		return AuthenticatedUser(
-			id: map['id'], 
-			first_name: map['first_name'], 
+			id: map['id'],
+			first_name: map['first_name'],
 			last_name: map['last_name'],
 			auth_timestamp: map['auth_timestamp']
 		);
 	}
+
+	Map<String, dynamic> get data => { 
+		'id': id,
+		'first_name': first_name,
+		'last_nane': last_name,
+		'auth_timestamp': auth_timestamp
+	};
 }
 
 class NewUser {
