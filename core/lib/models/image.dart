@@ -1,6 +1,8 @@
+import 'package:core/types/serializable.dart';
+
 enum ImageFormat { JPG, PNG, GIF }
 
-class UserImage {
+class UserImage extends Serializable {
 
 	UserImage({ this.id, this.format, this.is_profile });
 
@@ -10,7 +12,14 @@ class UserImage {
 
 	String get path => id + '.' + format.toString().toLowerCase();
 
-	static UserImage fromJSON(Map<String, dynamic> map) {
+	@override
+	Map<String, dynamic> get data => {
+		'id': id,
+		'format': format,
+		'is_profile': is_profile
+	};
+
+	static UserImage fromMap(Map<String, dynamic> map) {
 
 		return UserImage(
 			id: map['id'], 
