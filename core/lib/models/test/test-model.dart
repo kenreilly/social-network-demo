@@ -2,7 +2,7 @@ import 'package:core/core.dart';
 
 class TestModel extends Serializable {
 
-	TestModel({this.s, this.i, this.b}): super();
+	TestModel({this.s, this.i, this.b}) : super();
 
 	@serialize
 	String s;

@@ -1,8 +1,8 @@
 // import 'dart:io';
 import 'dart:convert';
+import 'package:core/models/test/test-model.dart';
 import 'package:core/types/serializable.dart';
 import 'package:test/test.dart';
-import 'models/test-model.dart';
 
 void main() async => CoreSDKTest.run();
 

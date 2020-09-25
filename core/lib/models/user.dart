@@ -1,8 +1,9 @@
+import 'package:core/hash.dart';
 import 'package:core/types/serializable.dart';
 
 class User extends Serializable {
 
-	User({ this.id, this.first_name, this.last_name });
+	User({ this.id, this.first_name, this.last_name }) : super();
 
 	@serialize
 	String id;
@@ -12,55 +13,36 @@ class User extends Serializable {
 
 	@serialize
 	String last_name;
-
-	// static User fromJSON(Map<String, dynamic> map) {
-
-	// 	return User(
-	// 		id: map['id'], 
-	// 		first_name: map['first_name'], 
-	// 		last_name: map['last_name'],
-	// 	);
-	// }
 }
 
 class AuthenticatedUser extends User {
 
-	AuthenticatedUser({ id, first_name, last_name, this.auth_timestamp }) 
+	AuthenticatedUser({ id, first_name, last_name, this.auth_timestamp, this.token }) 
 		: super(id: id, first_name: first_name, last_name: last_name);
 
+	@serialize
 	String auth_timestamp;
 
-	// static User fromJSON(Map<String, dynamic> map) {
-
-	// 	return AuthenticatedUser(
-	// 		id: map['id'],
-	// 		first_name: map['first_name'],
-	// 		last_name: map['last_name'],
-	// 		auth_timestamp: map['auth_timestamp']
-	// 	);
-	// }
-
-	// Map<String, dynamic> get data => { 
-	// 	'id': id,
-	// 	'first_name': first_name,
-	// 	'last_nane': last_name,
-	// 	'auth_timestamp': auth_timestamp
-	// };
+	@serialize
+	String token;
 }
 
-class NewUser {
+class NewUser extends Serializable {
 
-	NewUser({ this.email, this.password, this.first_name, this.last_name });
+	NewUser({ this.email, this.hashp, this.first_name, this.last_name }) : super();
 
+	@serialize
 	String email;
-	String password;
+
+	@serialize
+	String hashp;
+
+	@serialize
 	String first_name;
+
+	@serialize
 	String last_name;
 
-	Map<String, dynamic> get data => { 
-		'email': email,
-		'password': password,
-		'first_name': first_name,
-		'last_nane': last_name,
-	};
+	static NewUser create({ String email, String password, String first_name, String last_name}) =>
+		NewUser(email: email, hashp: Hash.create(password), first_name: first_name, last_name: last_name);
 }

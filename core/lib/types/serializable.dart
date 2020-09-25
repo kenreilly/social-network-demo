@@ -1,4 +1,5 @@
 import 'dart:mirrors';
+import 'package:core/core.dart';
 import 'package:core/types/decorator.dart';
 
 abstract class Serializable<T> {
@@ -11,13 +12,17 @@ abstract class Serializable<T> {
 		
 		if (MirrorSystem == null) return;
 		_instance = reflect(this);
-		_properties.forEach((m) => _fields[m.simpleName] = (m as VariableMirror).type.reflectedType);
+
+		List<DeclarationMirror> props = traverse(reflectClass(runtimeType));
+		props.forEach((m) => _fields[m.simpleName] = (m as VariableMirror).type.reflectedType);
 	}
 
 	Iterable<DeclarationMirror> get _properties =>
 		_instance.type.declarations.values.where((d) =>_isSerialized(d));
 
-	Map<dynamic, dynamic> get data =>
+	Map<String, dynamic> toJson() => data;
+
+	Map<String, dynamic> get data =>
 		_fields.map((Symbol s, Type t) => MapEntry(MirrorSystem.getName(s), _val(s, t)));
 
 	dynamic _val(Symbol s, Type t) =>
@@ -31,18 +36,46 @@ abstract class Serializable<T> {
 
 	static T of<T>(Map<dynamic, dynamic> map) => cast(T, map) as T;
 
+	static List<DeclarationMirror> traverse(ClassMirror c) {
+
+		List<DeclarationMirror> _fields = [];
+		_fields.addAll(c.declarations.values.where((d) => isSerializedProperty(d)));
+
+		if (c.superclass == null || c.superclass.reflectedType == Serializable) return _fields;
+		_fields.addAll(traverse(c.superclass));
+		return _fields;
+	}
+
 	static Serializable cast(Type t, Map<dynamic, dynamic> map) {
 
 		ClassMirror c = reflectType(t);
-		Iterable<DeclarationMirror> fields = c.declarations.values.where((d) => _isSerialized(d));
-		Map<Symbol, dynamic> items = Map.fromEntries(fields.map((d) => _parse(d as VariableMirror, map)));
+		List<DeclarationMirror> fields = traverse(c);
+
+		Map<Symbol, dynamic> items = Map.fromEntries(fields.map((d) {
+
+			dynamic x = _parse(d as VariableMirror, map);
+			return x;
+		}));
+
+		// if (c.reflectedType == AuthenticatedUser) {
+
+		// 	return AuthenticatedUser(
+		// 		id: items[Symbol('id')], 
+		// 		auth_timestamp: items[Symbol('auth_timestamp')], 
+		// 		first_name: items[Symbol('first_name')],
+		// 		last_name: items[Symbol('last_name')]);
+		// }
+
 		return c.newInstance(Symbol(''), [], items).reflectee as Serializable;
 	}
 
-	// static final Map<Type, Function>castmap = {
-	// 	String: (String s) => s,
-	// 	int: (int i) => i,
-	// };
+	static bool isSerializedProperty(DeclarationMirror d) => 
+		(d.metadata.isNotEmpty ? d.metadata.first.reflectee is Serialize : false);
+
+	static bool isSerializable(ClassMirror d) => 
+		(d.superclass != null && d.superclass.reflectedType != Object) 
+			? isSerializable(d.superclass) 
+			: d.reflectedType == Serializable;
 }
 
 class Serialize extends Decorator { const Serialize(); }

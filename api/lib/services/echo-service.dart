@@ -1,8 +1,6 @@
-
 import 'package:api/framework/rest-method.dart';
-import 'package:api/framework/meta/json-decorator.dart';
 import 'package:api/framework/rest-service.dart';
-import 'package:shelf_router/shelf_router.dart';
+import 'package:core/models/test/test-model.dart';
 
 @RoutePath('/')
 class EchoService extends RESTService {
@@ -14,4 +12,7 @@ class EchoService extends RESTService {
 
 	@GET('/check/:a')
 	Future<dynamic> check(int a) => Future.value(a);
+
+	@POST('/test-model')
+	Future<dynamic> test(TestModel tm) => Future.value(tm.data);
 }
