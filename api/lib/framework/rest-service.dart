@@ -26,8 +26,6 @@ abstract class RESTService extends ServiceBase {
 
 	static final List<RESTRoute> _routes = [];
 
-	static JsonEncoder _encoder = JsonEncoder();
-
 	RoutePath _route = RoutePath('/');
 	
 	RESTService(): super() {
@@ -35,6 +33,8 @@ abstract class RESTService extends ServiceBase {
 		_instances.add(this);
 		_self.type.metadata.forEach((m) => (m.reflectee is RoutePath) ? (_route = _route + m.reflectee) : null);
 		_self.type.declarations.forEach((Symbol s, DeclarationMirror m) { if (m is MethodMirror) (_load(s, m)); });
+
+		
 	}
 
 	static FutureOr<Response> forward(Request request) async {
@@ -42,13 +42,10 @@ abstract class RESTService extends ServiceBase {
 		RESTSession session = RESTSession(request);
 		RESTRoute route = await _routes.firstWhere((route) => route.check(session), orElse: () => null);
 		if (route == null) return Response.notFound('Not Found');
-
+		
 		try {
-			dynamic result = await route.handle(session);
-			// if (Serializable.isSerializable(reflectClass(result))) { result = result.data; }
-
-			Map<String, String> headers = { 'content-type': 'application/json' };
-			return Response.ok(_encoder.convert(result), headers: headers);
+			dynamic body = await route.handle(session);
+			return Response.ok(body, headers: route.headers);
 		} catch(e) {
 			return Response.internalServerError();
 		}
@@ -58,9 +55,21 @@ abstract class RESTService extends ServiceBase {
 		
 		if (m.metadata.isEmpty) return;
 		
-		// TODO: fix this 
-		String _verb = MirrorSystem.getName(m.metadata.first.type.simpleName);
-		RoutePath _path = _route + RoutePath(m.metadata.first.reflectee.route);
-		_routes.add(RESTRoute(this, _verb, _path, m));
+		String _verb;
+		RoutePath _path;
+		bool _json;
+		
+		m.metadata.forEach((InstanceMirror i) {
+
+			if (i.reflectee == JSON) { _json = true; }
+			else if (i.reflectee is RESTMethod) {
+				_verb = MirrorSystem.getName(i.type.simpleName);
+				_path = _route + RoutePath(i.reflectee.route);
+			}
+		});
+		
+		// TODO: fix this
+		
+		_routes.add(RESTRoute(this, _verb, _path, m, json: _json));
 	}
 }

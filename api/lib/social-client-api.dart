@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:api/services/image-service.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:api/framework/auth-provider.dart';
 import 'package:api/framework/rest-service.dart';
@@ -27,7 +28,11 @@ class SocialClientAPI {
 		AuthService();
 		EchoService();
 		UserService();
+		ImageService();
 
+		// HttpServer server = await HttpServer.bind('localhost', int.parse(_env['PORT']));
+		// await for (HttpRequest request in server) { }
+		
 		_server = await io.serve(RESTService.forward, 'localhost', int.parse(_env['PORT']));
 		Timer.periodic(Duration(minutes: 10), (Timer t) => DataProvider.flush());
 	}

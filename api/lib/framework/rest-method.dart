@@ -1,6 +1,9 @@
 
 import 'package:core/core.dart';
 
+class _JSON { const _JSON(); }
+const JSON = _JSON();
+
 class RoutePath extends Decorator {
 	
 	final String path;
@@ -79,4 +82,9 @@ class HEAD extends RESTMethod {
 class POST extends RESTMethod {
 	
 	const POST(route): super(HTTPMethodType.POST, route);
+}
+
+class PUT extends RESTMethod {
+	
+	const PUT(route): super(HTTPMethodType.PUT, route);
 }

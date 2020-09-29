@@ -17,16 +17,19 @@ class UserService extends RESTService {
 
 	UserService(): super();
 
+	@JSON
 	@GET('/')
 	@authenticate
 	Future<List<User>>list() async =>
 		await DataProvider.query(UserQuery.list);
 
+	@JSON
 	@GET('/:id')
 	@authenticate
 	Future<User>find(String id) async =>
 		Serializable.of<User>((await DataProvider.query(UserQuery.find, values: {'id':id})).first.values.first);
 
+	@JSON
 	@POST('/')
 	Future<Map<String, dynamic>>create(NewUser info) async =>
 		(await DataProvider.query(UserQuery.create, values: info.data)).first.values.first;

@@ -1,10 +1,9 @@
-CREATE TYPE image_format AS ENUM ( 'JPG', 'PNG', 'GIF' );
+CREATE TYPE public.image_format AS ENUM ( 'JPG', 'PNG', 'GIF' );
 
-CREATE TYPE new_image AS (
+CREATE TYPE public.new_image AS (
 	user_id uuid,
 	format image_format,
-	is_profile boolean,
-	image_data bytea NOT NULL
+	is_profile boolean
 );
 
 CREATE TABLE public.images (
@@ -12,7 +11,6 @@ CREATE TABLE public.images (
 	user_id uuid NOT NULL,
 	format image_format,
 	is_profile boolean DEFAULT false NOT NULL,
-	image_data bytea NOT NULL,
 	create_timestamp timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -25,8 +23,11 @@ CREATE FUNCTION public.add_image(img new_image) RETURNS uuid
 	DECLARE
 		_id uuid;
 	BEGIN
-		insert into images (user_id, format, is_profile, image_data)
-		values (img.user_id, img.format, img.is_profile, image_data) returning id into _id;
+		if img.is_profile = true then
+			update images set is_profile = false where user_id = img.user_id;
+		end if;
+		insert into images (user_id, format, is_profile)
+			values (img.user_id, img.format, img.is_profile) returning id into _id;
 		return _id;
 	END;
 $_$ SECURITY DEFINER;

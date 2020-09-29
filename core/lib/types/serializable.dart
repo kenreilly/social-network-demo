@@ -22,11 +22,13 @@ abstract class Serializable<T> {
 
 	Map<String, dynamic> toJson() => data;
 
-	Map<String, dynamic> get data =>
+	dynamic get data =>
 		_fields.map((Symbol s, Type t) => MapEntry(MirrorSystem.getName(s), _val(s, t)));
 
-	dynamic _val(Symbol s, Type t) =>
-		_instance.getField(s).reflectee;
+	dynamic _val(Symbol s, Type t) {
+		dynamic prop = _instance.getField(s).reflectee;
+		return (prop is Serializable) ? prop.data : prop;
+	}
 		
 	static bool _isSerialized(DeclarationMirror d) =>
 		(d.metadata.where((InstanceMirror i) => i.reflectee is Serialize).isNotEmpty);

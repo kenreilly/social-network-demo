@@ -18,6 +18,7 @@ class AuthService extends RESTService {
 
 	AuthService(): super();
 
+	@JSON
 	@POST('/auth')
 	Future<dynamic> auth(AuthRequest req) =>
 		DataProvider.query(_query, values: req.data).then((res) => _process(res.first.values.first['user'])); 

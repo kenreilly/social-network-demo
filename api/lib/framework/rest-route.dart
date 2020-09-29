@@ -12,12 +12,22 @@ class RESTRoute {
 	final RoutePath route;
 	final MethodMirror method;
 	final RESTService service;
+	
+	bool json = false;
 
 	List<RouteComponent> components;
 
-	final JsonDecoder _decoder = JsonDecoder();
+	Map<String, String> get headers => 
+		// { 'content-type': 'application/' + ((json == true) ? 'json' : 'octet-stream') };
+		{ 'content-type': (json == true ? 'application/json' : 'multipart/byteranges') };
+		// (json == true) ? { 'content-type': 'application/json' } : { };
 
-	RESTRoute(this.service, this.verb, this.route, this.method) {
+	static final JsonEncoder _encoder = const JsonEncoder();
+	static final JsonDecoder _decoder = const JsonDecoder();
+
+	static final Utf8Decoder _utfdecoder = const Utf8Decoder();
+
+	RESTRoute(this.service, this.verb, this.route, this.method, { this.json = false }) {
 		components = RouteComponent.generate(route.path);
 	}
 
@@ -35,40 +45,45 @@ class RESTRoute {
 	}
 
 	Future<dynamic> handle(RESTSession session) async => 
-		await authorize(session).then((_) async => invoke(session));
+		await _authorize(session).then((_) async => _format(await _invoke(session)));
 
-	Future<dynamic> authorize(RESTSession session) async => true;
+	Future<dynamic> _authorize(RESTSession session) async => true;
 
-	Future<dynamic> invoke(RESTSession session) async => 
+	Future<dynamic> _invoke(RESTSession session) async => 
 		(await reflect(service).invoke(method.simpleName, await _args(session)).reflectee);
+
+	dynamic _format(dynamic result) => 
+		(json == true) ? _encoder.convert(result) : result;
 
 	Future<List<dynamic>> _args(RESTSession session) async {
 
 		List<dynamic> params = [];
-
-		if (verb == 'POST') {
-			Type t = method.parameters.first.type.reflectedType;
-			String body = await session.request.readAsString();
-			params.add(parse(t, _decoder.convert(body)));
-			return Future.value(params);
-		}
-		
-		if (components.isEmpty) return [];
 		List<String> paths = session.request.url.pathSegments;
 		
 		for (var i = 0, p = 0; i != components.length; ++i) {
 			
 			if (components[i] is RouteParameter) {
 				Type t = method.parameters[p].type.reflectedType;
-				params.add(parse(t, paths[i]));
+				params.add(_parse(t, paths[i]));
 				++p;
 			}
 		}
+		
+		if (verb == 'POST') {
+			Type t = method.parameters.last.type.reflectedType;
+			String body = await session.request.readAsString();
+			params.add(_parse(t, _decoder.convert(body)));
+			
+		}
 
+		if (verb == 'PUT') {
+			await session.request.read().listen((x) => params.add(x));
+		}
+		
 		return Future.value(params);
 	}
 
-	dynamic parse(Type t, dynamic val) {
+	dynamic _parse(Type t, dynamic val) {
 
 		if (Serializable.isSerializable(reflectClass(t))) return Serializable.cast(t, val);
 

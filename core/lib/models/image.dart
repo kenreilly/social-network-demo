@@ -1,15 +1,72 @@
+import 'dart:convert';
 import 'dart:typed_data';
-
+// import 'package:hex/hex.dart';
 import 'package:core/types/serializable.dart';
 
-enum ImageFormat { JPG, PNG, GIF }
+class ImageData extends Serializable {
+ 
+	List<int> bytes = [];
+
+	ImageData({bytes}) {
+		// this.bytes = (bytes is String) ? HEX.decode(bytes) : bytes;
+	}
+
+	// @override
+	// dynamic get data => HEX.encode(bytes);
+}
+
+class ImageFormat extends Serializable {
+
+	final String name;
+	ImageFormat(this.name);
+
+	@override
+	String get data => name;
+
+	static ImageFormat from(String ext) {
+
+		switch (ext) {
+
+			case 'JPG':
+			case 'JPEG': 
+				return ImageFormat.JPG;
+			case 'PNG': 
+				return ImageFormat.PNG;
+			case 'GIF': 
+				return ImageFormat.GIF;
+		}
+		return null;
+	}
+
+	static final ImageFormat JPG = ImageFormat('JPG');
+	static final ImageFormat PNG = ImageFormat('PNG');
+	static final ImageFormat GIF = ImageFormat('GIF');
+}
+
+extension ImageFormatSerializer on ImageFormat {
+
+	String toJson() => toString().split('.').last;
+}
+
+extension DateTimeSerializer on DateTime {
+
+	String toJson() => toString().split('.').last;
+}
 
 class UserImage extends Serializable {
 
-	UserImage({ this.id, this.format, this.is_profile, this.image_data });
+	UserImage({ this.id, this.user_id, format, this.is_profile, create_timestamp }) : super() {
+		this.format = (format is ImageFormat) ? format : ImageFormat.from(format);
+		// this.image_data = (image_data is ImageData) ? image_data : ImageData(bytes: image_data);
+		this.create_timestamp = (create_timestamp is DateTime) ? create_timestamp 
+			: (create_timestamp == null ? null : DateTime.parse(create_timestamp));
+	}
 
 	@serialize
 	String id;
+
+	@serialize 
+	String user_id;
 
 	@serialize
 	ImageFormat format;
@@ -17,25 +74,13 @@ class UserImage extends Serializable {
 	@serialize
 	bool is_profile;
 	
-	@serialize
-	ByteData image_data;
+	// @serialize
+	// List<dynamic> image_data;
 
-	// String get path => id + '.' + format.toString().toLowerCase();
+	@serialize
+	DateTime create_timestamp;
 
 	@override
-	Map<String, dynamic> get data => {
-		'id': id,
-		'format': format,
-		'is_profile': is_profile,
-		// 'image_data': 
-	};
-
-	static UserImage fromMap(Map<String, dynamic> map) {
-
-		return UserImage(
-			id: map['id'], 
-			format: map['format'], 
-			is_profile: map['is_profile']
-		);
-	}
+	Map<String, dynamic> get data => 
+		super.data..update('create_timestamp', (_) => create_timestamp == null ? null : create_timestamp.toIso8601String());
 }
