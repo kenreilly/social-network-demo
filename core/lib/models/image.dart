@@ -1,19 +1,4 @@
-import 'dart:convert';
-import 'dart:typed_data';
-// import 'package:hex/hex.dart';
 import 'package:core/types/serializable.dart';
-
-class ImageData extends Serializable {
- 
-	List<int> bytes = [];
-
-	ImageData({bytes}) {
-		// this.bytes = (bytes is String) ? HEX.decode(bytes) : bytes;
-	}
-
-	// @override
-	// dynamic get data => HEX.encode(bytes);
-}
 
 class ImageFormat extends Serializable {
 
@@ -44,20 +29,17 @@ class ImageFormat extends Serializable {
 }
 
 extension ImageFormatSerializer on ImageFormat {
-
 	String toJson() => toString().split('.').last;
 }
 
-extension DateTimeSerializer on DateTime {
-
-	String toJson() => toString().split('.').last;
-}
+// extension DateTimeSerializer on DateTime {
+// 	String toJson() => toString().split('.').last;
+// }
 
 class UserImage extends Serializable {
 
 	UserImage({ this.id, this.user_id, format, this.is_profile, create_timestamp }) : super() {
 		this.format = (format is ImageFormat) ? format : ImageFormat.from(format);
-		// this.image_data = (image_data is ImageData) ? image_data : ImageData(bytes: image_data);
 		this.create_timestamp = (create_timestamp is DateTime) ? create_timestamp 
 			: (create_timestamp == null ? null : DateTime.parse(create_timestamp));
 	}
@@ -73,12 +55,11 @@ class UserImage extends Serializable {
 	
 	@serialize
 	bool is_profile;
-	
-	// @serialize
-	// List<dynamic> image_data;
 
 	@serialize
 	DateTime create_timestamp;
+
+	String get ext => format.name.toLowerCase();
 
 	@override
 	Map<String, dynamic> get data => 

@@ -40,7 +40,10 @@ abstract class ClientAPITest {
 	static final AuthRequest auth = AuthRequest(email: randuser.email, hashp: randuser.hashp);
 	static AuthenticatedUser user;
 	static UserImage image;
-	static String imageId;
+	static List<String> postIds = [];
+	static Post post;
+	static String roomId;
+	static Room room;
 
 	static Future<void> run() async {
 		
@@ -50,10 +53,28 @@ abstract class ClientAPITest {
 		test('POST: /test-model', modelTest);
 		test('POST: /users', userCreateTest);
 		test('POST: /auth', authTest);
-		test('POST: /users/:id', findUserTest);
+		test('GET: /users/me', findMeTest);
+		test('GET: /users/:id', findUserTest);
 		test('POST: /images', createImageTest);
 		test('GET: /images/profile/:user_id', getProfileImageTest);
-		// test('shutdown', shutdown);
+		test('GET: /images/user/:user_id', getUserImagesTest);
+
+		for (var i = 0; i < 3; ++i) {
+			test('POST: /posts/', createPostTest);
+			test('GET: /posts/:post_id', getPostTest);
+			test('GET: /posts/user/:user_id', getUserPostsTest);
+		}
+
+		test('POST: /rooms', createRoomTest);
+		test('WS: /rooms/join/:id', joinRoomTest);
+
+		// for (var i = 0; i < 3; ++i) {
+		// 	test('DELETE: /posts/:id', deletePostTest);
+		// }
+
+		// test('DELETE: /images/:id', deleteImageTest);
+
+		test('shutdown', shutdown);
 	}
 
 	static void startup() async { await server.start(); expect(server.host, isNotNull); }
@@ -78,10 +99,20 @@ abstract class ClientAPITest {
 	static Future<dynamic> _putRequest(String url, dynamic content, { String token, Function verify }) async {
 
 		HttpClientRequest req = await client.put(server.host, server.port, url);
-		req.headers.contentType = ContentType('application', 'octet-stream', charset: 'utf-8');
+		// req.headers.contentType = ContentType('application', 'octet-stream', charset: 'utf-8');
+		req.headers.contentType = ContentType('text', 'plain');
 		if (token != null) req.headers.add('Authorization', 'Bearer ' + token);
 		Function callback = (verify == null) ? (data) => expect(dec.convert(data), equals(content)) : verify;
-		return await (req..add(content)).close()..transform(utf8.decoder).listen((x) => callback(x));
+		return await (req..write(base64.encode(content))).close()..transform(utf8.decoder).listen((x) => callback(x));
+	}
+
+	static Future<dynamic> _deleteRequest(String url, { dynamic expected, String token, Function verify }) async {
+		
+		HttpClientRequest req = await client.delete(server.host, server.port, url);
+		if (token != null) req.headers.add('Authorization', 'Bearer ' + token);
+		Function callback = (verify == null) ? (data) => expect(dec.convert(data), equals(expected)) : verify;
+		HttpClientResponse res = await req.close();
+		return await res.transform(utf8.decoder).listen((x) => callback(x));
 	}
 
 	static Future<dynamic> _process(HttpClientRequest req, dynamic content, { String token, Function verify }) async {
@@ -108,6 +139,10 @@ abstract class ClientAPITest {
 	
 	static void findUserTest() async =>
 		_getRequest('/users/' + user.id, token: user.token, verify: (String data) => 
+			expect(Serializable.of<User>(dec.convert(data)) is User, true));
+
+	static void findMeTest() async =>
+		_getRequest('/users/me', token: user.token, verify: (String data) => 
 			expect(Serializable.of<User>(dec.convert(data)) is User, true));
 
 	static Future<void> saveUser(String data) async { 
@@ -146,13 +181,80 @@ abstract class ClientAPITest {
 
 			await _getRequest('/images/' + testimage.id + '/content', token: user.token, verify: (dynamic data) {
 
-				File file = File('test/retrieved-test-image.' + testimage.format.data.toLowerCase());
-				file.writeAsBytes(data);
-				expect(testimage.data, equals(image.data));
+				List<int> bytes = base64.decode(data);
+				File file = File('test/retrieved-test-image.' + testimage.ext);
+				file.writeAsBytes(bytes);
+				expect(testimage.id, equals(image.id));
 			});
 		}
 		catch(e) {
 			print(e);
 		}
+	}
+
+	static void getUserImagesTest() async {
+
+		UserImage testimage;
+		await _getRequest('/images/user/' + user.id, token: user.token, verify: (String data) {	
+			testimage = Serializable.of<UserImage>(dec.convert(data)[0]);
+			expect(testimage.user_id, equals(user.id));
+		});
+	}
+
+	static void createPostTest() async {
+
+		NewPost newpost = NewPost(user_id: user.id, image_id: image.id, content: _rstr(2048));
+		await _postRequest('/posts', newpost.data, token: user.token, verify: (String data) {
+			postIds.add(dec.convert(data)['create_post']);
+			expect(postIds.last, isNotNull);
+		});
+	}
+
+	static void getPostTest() async {
+
+		await _getRequest('/posts/' + postIds.last, token: user.token, verify: (dynamic data) {
+			post = Serializable.of<Post>(dec.convert(data));
+			expect(post.id, equals(postIds.last));
+		});
+	}
+
+	static void getUserPostsTest() async {
+
+		await _getRequest('/posts/user/' + user.id, token: user.token, verify: (dynamic data) {
+			
+			List<dynamic> items = dec.convert(data);
+			List<Post> posts = items.map((item) => Serializable.of<Post>(item)).toList();
+			posts.forEach((post) => expect(post.user_id, equals(user.id)));
+		});
+	}
+
+	static void createRoomTest() async {
+
+		NewRoom room = NewRoom(owner_id: user.id, title: _rstr(32), about: _rstr(1024), image_id: image.id);
+		await _postRequest('/rooms', room.data, token: user.token, verify: (String data) {
+			roomId = dec.convert(data)['create_room'];
+			expect(roomId, isNotNull);
+		});
+	}
+
+	static void joinRoomTest() async {
+
+		String url = 'ws://' + server.host + ':' + server.port.toString() + '/rooms/chat/' + roomId;
+		Map<String, dynamic> headers = { 'Authorization': 'Bearer ' + user.token };
+		WebSocket sock = await WebSocket.connect(url, headers: headers);
+		
+		sock.listen((event) {
+			print(event);
+		});
+		sock.add(json.encode({ 'a': 1 }));
+		print(sock);
+	}
+
+	static void deletePostTest() async {
+		await _deleteRequest('/posts/' + postIds.removeLast(), token: user.token, expected: {'delete_post': true});
+	}
+
+	static void deleteImageTest() async {
+		await _deleteRequest('/images/' + image.id, token: user.token, expected: {'delete_image': true});
 	}
 }

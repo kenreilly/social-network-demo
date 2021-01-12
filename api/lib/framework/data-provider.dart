@@ -42,8 +42,11 @@ abstract class DataProvider {
 	static DB _db;
 	static Future<DB> create(Map<String, dynamic> env) async => _db ??= await DB.connect(env);
 
-	static Future<List<dynamic>>query(String sql, { Map<String, dynamic> values }) => 
+	static Future<List<dynamic>>query(String sql, { Map<String, dynamic> values }) async => 
 		(_db != null) ? _db.query(sql, values: values) : Future.value(null);
+
+	static Future<dynamic> queryOne(String sql, {Map<String, dynamic> values }) async =>
+		(await DataProvider.query(sql, values: values)).first.values.first;
 	
 	static Future<void> flush() => 
 		(_db != null) ? _db.flush() : Future.value(null);

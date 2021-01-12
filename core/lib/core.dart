@@ -8,4 +8,5 @@ export 'models/test/test-model.dart';
 export 'models/image.dart';
 export 'models/post.dart';
 export 'models/user.dart';
+export 'models/room.dart';
 export 'hash.dart';

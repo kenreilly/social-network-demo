@@ -1,4 +1,3 @@
-
 import 'package:core/core.dart';
 
 class _JSON { const _JSON(); }
@@ -45,7 +44,7 @@ class RouteParameter extends RouteComponent {
 	bool _test(String part) => part.isNotEmpty;
 }
 
-enum HTTPMethodType {
+enum APIMethodType {
 	GET,
 	HEAD,
 	POST,
@@ -54,37 +53,40 @@ enum HTTPMethodType {
 	CONNECT,
 	OPTIONS,
 	TRACE,
-	PATCH
+	PATCH,
+	WS
 }
 
-extension HTTPMethodString on HTTPMethodType {
-
+extension HTTPMethodString on APIMethodType {
 	String get name => toString().split('.').last;
 }
 
-abstract class RESTMethod extends Decorator {
-
-	final HTTPMethodType method;
+abstract class APIMethod extends Decorator {
+	final APIMethodType method;
 	final String route;
-	const RESTMethod(this.method, this.route);
+	const APIMethod(this.method, this.route);
 }
 
-class GET extends RESTMethod {
-
-	const GET(route): super(HTTPMethodType.GET, route);
+class GET extends APIMethod {
+	const GET(route): super(APIMethodType.GET, route);
 }
 
-class HEAD extends RESTMethod {
-
-	const HEAD(route): super(HTTPMethodType.HEAD, route);
+class HEAD extends APIMethod {
+	const HEAD(route): super(APIMethodType.HEAD, route);
 }
 
-class POST extends RESTMethod {
-	
-	const POST(route): super(HTTPMethodType.POST, route);
+class POST extends APIMethod {	
+	const POST(route): super(APIMethodType.POST, route);
 }
 
-class PUT extends RESTMethod {
-	
-	const PUT(route): super(HTTPMethodType.PUT, route);
+class PUT extends APIMethod {
+	const PUT(route): super(APIMethodType.PUT, route);
+}
+
+class DELETE extends APIMethod {
+	const DELETE(route): super(APIMethodType.DELETE, route);
+}
+
+class WS extends APIMethod {
+	const WS(route): super(APIMethodType.WS, route);
 }

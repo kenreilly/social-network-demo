@@ -1,15 +1,12 @@
 import 'dart:convert';
-
+import 'package:core/core.dart';
 import 'package:api/framework/auth-provider.dart';
 import 'package:api/framework/data-provider.dart';
-import 'package:api/framework/rest-method.dart';
-import 'package:api/framework/rest-service.dart';
-import 'package:core/core.dart';
-import 'package:jaguar_jwt/jaguar_jwt.dart';
-import 'package:core/models/test/test-model.dart';
+import 'package:api/framework/api-method.dart';
+import 'package:api/framework/api-service.dart';
 
 @RoutePath('/')
-class AuthService extends RESTService {
+class AuthService extends APIService {
 
 	static final String _query = 'select to_json(authenticate_user(@email, @hashp)) as user;';
 
@@ -21,7 +18,7 @@ class AuthService extends RESTService {
 	@JSON
 	@POST('/auth')
 	Future<dynamic> auth(AuthRequest req) =>
-		DataProvider.query(_query, values: req.data).then((res) => _process(res.first.values.first['user'])); 
+		DataProvider.queryOne(_query, values: req.data).then((res) => _process(res['user'])); 
 
 	dynamic _process(String json) {
 

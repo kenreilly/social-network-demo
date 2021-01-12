@@ -14,10 +14,4 @@ class AuthRequest extends Serializable {
 
 	static AuthRequest create({String email, String password}) => 
 		AuthRequest(email: email, hashp: Hash.create(password));
-
-	// static AuthRequest fromMap(Map<String, dynamic> map) =>
-	// 	AuthRequest(email: map['email'], hashp: map['hashp']);
-
-	// @override
-	// Map<String, dynamic> get data => { 'email': email, 'hashp': hashp };
 }

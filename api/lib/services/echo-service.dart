@@ -1,9 +1,9 @@
-import 'package:api/framework/rest-method.dart';
-import 'package:api/framework/rest-service.dart';
+import 'package:api/framework/api-method.dart';
+import 'package:api/framework/api-service.dart';
 import 'package:core/models/test/test-model.dart';
 
 @RoutePath('/')
-class EchoService extends RESTService {
+class EchoService extends APIService {
 
 	EchoService(): super();
 

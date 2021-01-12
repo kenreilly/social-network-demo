@@ -7,8 +7,7 @@ environment:
   sdk: '>=2.7.0 <3.0.0'
 
 dependencies:
-  shelf: ^0.7.5
-  shelf_router: ^0.7.2
+  http_server: ^0.9.8+3
   dotenv: ^1.0.0
   postgres: ^2.1.1
   jaguar_jwt: ^2.1.6

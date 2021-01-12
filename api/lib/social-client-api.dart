@@ -1,13 +1,15 @@
-import 'dart:async';
 import 'dart:io';
-import 'package:api/services/image-service.dart';
-import 'package:shelf/shelf_io.dart' as io;
+import 'dart:async';
+import 'package:api/services/room-service.dart';
+import 'package:http_server/http_server.dart';
 import 'package:api/framework/auth-provider.dart';
-import 'package:api/framework/rest-service.dart';
+import 'package:api/framework/data-provider.dart';
+import 'package:api/framework/api-service.dart';
 import 'package:api/services/auth-service.dart';
 import 'package:api/services/echo-service.dart';
+import 'package:api/services/post-service.dart';
 import 'package:api/services/user-service.dart';
-import 'package:api/framework/data-provider.dart';
+import 'package:api/services/image-service.dart';
 
 class SocialClientAPI {
 
@@ -29,11 +31,11 @@ class SocialClientAPI {
 		EchoService();
 		UserService();
 		ImageService();
+		PostService();
+		RoomService();
 
-		// HttpServer server = await HttpServer.bind('localhost', int.parse(_env['PORT']));
-		// await for (HttpRequest request in server) { }
-		
-		_server = await io.serve(RESTService.forward, 'localhost', int.parse(_env['PORT']));
+		_server = await HttpServer.bind('localhost', int.parse(_env['PORT']));
+		_server.transform(HttpBodyHandler()).listen(APIService.onRequest);
 		Timer.periodic(Duration(minutes: 10), (Timer t) => DataProvider.flush());
 	}
 

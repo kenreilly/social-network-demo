@@ -4,37 +4,32 @@ class Post extends Serializable {
 
 	Post({ this.id, this.user_id, this.image_id, this.content, this.create_timestamp });
 
+	@serialize
 	String id;
+	
+	@serialize
 	String user_id; 
+	
+	@serialize
 	String image_id;
+	
+	@serialize
 	String content;
+	
+	@serialize
 	String create_timestamp;
-
-	Map<String, dynamic> get data => {
-		'id': id,
-		'user_id': user_id,
-		'image_id': image_id,
-		'content': content,
-		'create_timestamp': create_timestamp,
-	};
-
-	static Post fromMap(Map<String, dynamic> map) {
-
-		return Post(
-			id: map['id'], 
-			user_id: map['user_id'], 
-			image_id: map['image_id'],
-			content: map['content'],
-			create_timestamp: map['create_timestamp']
-		);
-	}
 }
 
-class NewPost {
+class NewPost extends Serializable {
 
 	NewPost({ this.user_id, this.image_id, this.content });
 
+	@serialize
 	String user_id;
+
+	@serialize
 	String image_id;
+
+	@serialize
 	String content;
 }

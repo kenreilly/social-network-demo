@@ -33,8 +33,6 @@ GRANT EXECUTE ON FUNCTION public.create_post(post new_post) TO social_demo_api_r
 CREATE FUNCTION public.delete_post(post_id uuid) RETURNS boolean
 	LANGUAGE plpgsql
 	AS $_$
-	DECLARE
-		_id boolean;
 	BEGIN
 		DELETE FROM posts WHERE id = post_id;
 		return true;

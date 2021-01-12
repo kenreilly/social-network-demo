@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:core';
 import 'dart:convert';
-import 'package:api/framework/data-provider.dart';
 import 'package:core/core.dart';
-import 'package:shelf/shelf.dart';
+import 'package:http_server/http_server.dart';
 import 'package:jaguar_jwt/jaguar_jwt.dart';
-import 'package:core/hash.dart';
 
 class Authenticate extends Decorator { const Authenticate(); }
 const authenticate = Authenticate();
@@ -14,6 +12,7 @@ abstract class AuthProvider {
 
 	static String _secret;
 	static final String _issuer = 'Social Network Demo';
+	static final String _audience = 'localhost';
 
 	static final JsonEncoder _encoder = const JsonEncoder();
 	static final JsonDecoder _decoder = const JsonDecoder();
@@ -21,21 +20,21 @@ abstract class AuthProvider {
 	static void init(Map<String, String> env) => _secret = env['JWT_AUTH_SECRET'];
 
 	static JwtClaim claim(Map<String, dynamic> data) =>
-		JwtClaim(subject: _encoder.convert(data), issuer: _issuer, audience: ['localhost']);
+		JwtClaim(subject: _encoder.convert(data), issuer: _issuer, audience: [_audience]);
 
 	static void tokenize(AuthenticatedUser user) =>
 		(user.token = issueJwtHS256(claim(user.data), _secret));
 
-	FutureOr<Response> verify(Request request) async {
+	static Future<AuthenticatedUser> verify(HttpRequestBody reqbody) async {
 
 		try {
-			String token = request.headers['Authorization'].replaceAll('Bearer ', '');
+			String token = reqbody.request.headers['Authorization'].first.replaceAll('Bearer ', '');
 			JwtClaim claim = verifyJwtHS256Signature(token, _secret);
-			claim.validate(issuer: 'ACME Widgets Corp', audience: 'example.com');
-			return null;
+			claim.validate(issuer: _issuer, audience: _audience);
+			return Serializable.of<AuthenticatedUser>(_decoder.convert(claim.subject));
 		}
 		catch(e) {
-			return Response.forbidden('Authorization rejected');
+			throw Exception('Not Authorized');
 		}
 	}
 }

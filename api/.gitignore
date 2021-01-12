@@ -11,3 +11,4 @@ build/
 doc/api/
 
 test/logs/*
+test/retrieved-test-image.png

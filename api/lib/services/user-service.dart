@@ -1,9 +1,9 @@
 import 'package:api/framework/auth-provider.dart';
-import 'package:api/framework/rest-method.dart';
-import 'package:api/framework/rest-service.dart';
-import 'package:core/models/user.dart';
+import 'package:api/framework/api-method.dart';
+import 'package:api/framework/api-service.dart';
 import 'package:api/framework/data-provider.dart';
 import 'package:core/types/serializable.dart';
+import 'package:core/models/user.dart';
 
 abstract class UserQuery {
 
@@ -13,7 +13,7 @@ abstract class UserQuery {
 }
 
 @RoutePath('/users')
-class UserService extends RESTService {
+class UserService extends APIService {
 
 	UserService(): super();
 
@@ -24,13 +24,19 @@ class UserService extends RESTService {
 		await DataProvider.query(UserQuery.list);
 
 	@JSON
+	@GET('/me')
+	@authenticate
+	Future<User>me({ AuthenticatedUser user }) async =>
+		Serializable.of<User>(await DataProvider.queryOne(UserQuery.find, values: {'id': user.id}));
+
+	@JSON
 	@GET('/:id')
 	@authenticate
 	Future<User>find(String id) async =>
-		Serializable.of<User>((await DataProvider.query(UserQuery.find, values: {'id':id})).first.values.first);
+		Serializable.of<User>(await DataProvider.queryOne(UserQuery.find, values: {'id':id}));
 
 	@JSON
 	@POST('/')
 	Future<Map<String, dynamic>>create(NewUser info) async =>
-		(await DataProvider.query(UserQuery.create, values: info.data)).first.values.first;
+		await DataProvider.queryOne(UserQuery.create, values: info.data);
 }
