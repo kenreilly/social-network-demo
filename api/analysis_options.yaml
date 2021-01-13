@@ -15,5 +15,5 @@ analyzer:
 
 linter:
     rules:
-        always_specify_types: true
+        # always_specify_types: true
         omit_local_variable_types: false

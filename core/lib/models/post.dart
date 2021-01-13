@@ -1,30 +1,35 @@
-class Post {
+import 'package:core/types/serializable.dart';
+
+class Post extends Serializable {
 
 	Post({ this.id, this.user_id, this.image_id, this.content, this.create_timestamp });
 
+	@serialize
 	String id;
+	
+	@serialize
 	String user_id; 
+	
+	@serialize
 	String image_id;
+	
+	@serialize
 	String content;
+	
+	@serialize
 	String create_timestamp;
-
-	static Post fromJSON(Map<String, dynamic> map) {
-
-		return Post(
-			id: map['id'], 
-			user_id: map['user_id'], 
-			image_id: map['image_id'],
-			content: map['content'],
-			create_timestamp: map['create_timestamp']
-		);
-	}
 }
 
-class NewPost {
+class NewPost extends Serializable {
 
 	NewPost({ this.user_id, this.image_id, this.content });
 
+	@serialize
 	String user_id;
+
+	@serialize
 	String image_id;
+
+	@serialize
 	String content;
 }

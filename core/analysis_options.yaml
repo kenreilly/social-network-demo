@@ -12,3 +12,8 @@ include: package:pedantic/analysis_options.yaml
 analyzer:
 #   exclude:
 #     - path/to/excluded/files/**
+
+linter:
+    rules:
+        # always_specify_types: true
+        omit_local_variable_types: false
