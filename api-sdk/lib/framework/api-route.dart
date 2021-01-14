@@ -4,9 +4,9 @@ import 'dart:convert';
 import 'dart:mirrors';
 import 'package:core/core.dart';
 import 'package:http_server/http_server.dart';
-import 'package:api/framework/auth-provider.dart';
-import 'package:api/framework/api-service.dart';
-import 'package:api/framework/api-method.dart';
+import 'package:api_sdk/framework/auth-provider.dart';
+import 'package:api_sdk/framework/api-service.dart';
+import 'package:api_sdk/framework/api-method.dart';
 
 class APIRoute {
 	

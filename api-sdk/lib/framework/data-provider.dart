@@ -2,9 +2,9 @@ import 'package:postgres/postgres.dart';
 
 class DB {
 
-	final PostgreSQLConnection _connection;
+	final PostgreSQLConnection _conn;
 
-	DB(this._connection);
+	DB(this._conn);
 
 	static Future<DB> connect(Map<String, dynamic> env) async {
 
@@ -17,22 +17,17 @@ class DB {
 		PostgreSQLConnection conn = PostgreSQLConnection(_host, _port, _name, username: _user, password: _pass);
 		await conn.open();
 		return DB(conn);
-		
 	}
 
 	Future<List<dynamic>> query(String sql, { Map<String, dynamic> values }) async {
 
-		try { 
-			return await _connection.mappedResultsQuery(sql, substitutionValues: values);
-		}
-		catch(e) {
-			return Future<List<dynamic>>.value(List<dynamic>(0));
-		}
+		try { return await _conn.mappedResultsQuery(sql, substitutionValues: values); }
+		catch(e) { return Future<List<dynamic>>.value(List<dynamic>(0)); }
 	}
 
 	Future<void> flush() async {
 
-		try { return await _connection.query('select flush();'); }
+		try { return await _conn.query('select flush();'); }
 		catch(e) { return Future<void>.value(null); }
 	}
 }

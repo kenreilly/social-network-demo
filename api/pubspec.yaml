@@ -7,12 +7,10 @@ environment:
   sdk: '>=2.7.0 <3.0.0'
 
 dependencies:
-  http_server: ^0.9.8+3
-  dotenv: ^1.0.0
-  postgres: ^2.1.1
-  jaguar_jwt: ^2.1.6
   core: 
     path: ../core/
+  api_sdk:
+    path: ../api-sdk/
 
 dev_dependencies:
   pedantic: ^1.8.0

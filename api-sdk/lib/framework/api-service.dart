@@ -1,14 +1,15 @@
 import 'dart:io';
 import 'dart:convert';
 import 'dart:mirrors';
-import 'package:api/framework/api-method.dart';
-import 'package:api/framework/api-route.dart';
+import 'package:api_sdk/framework/api-method.dart';
+import 'package:api_sdk/framework/api-route.dart';
 import 'package:http_server/http_server.dart';
 
 abstract class ServiceBase {
 	
 	InstanceMirror _self;
 	ServiceBase() { _self = reflect(this); }
+	void dispose() => _self = null;
 }
 
 class RESTSession {
@@ -20,11 +21,9 @@ class RESTSession {
 abstract class APIService extends ServiceBase {
 
 	static final List<APIService> _instances = [];
-
 	static final List<APIRoute> _routes = [];
 
 	RoutePath _route = RoutePath('/');
-
 	VirtualDirectory vd;
 	
 	APIService(): super() {
@@ -34,11 +33,18 @@ abstract class APIService extends ServiceBase {
 		_self.type.declarations.forEach((Symbol s, DeclarationMirror m) { if (m is MethodMirror) (_load(s, m)); });
 	}
 
+	@override
+	void dispose() {
+
+		_instances.remove(this);
+		super.dispose();
+	}
+
 	static void onRequest(HttpRequestBody reqbody) async {
 
 		HttpResponse response = reqbody.request.response;
-
 		APIRoute route = await _routes.firstWhere((route) => route.check(reqbody.request), orElse: () => null);
+		
 		if (route == null) {
 			await (response..statusCode = 404)..write('NotFound');
 			await response.close();
