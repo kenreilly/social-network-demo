@@ -1,9 +1,8 @@
 import 'dart:io';
-import 'package:http_server/http_server.dart';
-import 'package:api/framework/auth-provider.dart';
-import 'package:api/framework/data-provider.dart';
-import 'package:api/framework/api-method.dart';
-import 'package:api/framework/api-service.dart';
+import 'package:api_sdk/framework/auth-provider.dart';
+import 'package:api_sdk/framework/data-provider.dart';
+import 'package:api_sdk/framework/api-method.dart';
+import 'package:api_sdk/framework/api-service.dart';
 import 'package:core/types/serializable.dart';
 import 'package:core/models/image.dart';
 import 'package:core/models/user.dart';
@@ -21,10 +20,7 @@ abstract class ImageQuery {
 @RoutePath('/images')
 class ImageService extends APIService {
 
-	static final dir = Uri.directory( '../userdata/images');
-
-	@override
-	VirtualDirectory vd = VirtualDirectory(dir.path);
+	static final dir = Uri.directory('../userdata/images');
 
 	ImageService(): super();
 
@@ -38,20 +34,20 @@ class ImageService extends APIService {
 	@GET('/:id')
 	@authenticate
 	Future<UserImage> find(String id) async =>
-		Serializable.of<UserImage>(await DataProvider.queryOne(ImageQuery.find, values: {'id': id }));
+		Serializable.of<UserImage>(await DataProvider.queryOne(ImageQuery.find, values: { 'id': id }));
 
 	@JSON
 	@GET('/profile/:user_id')
 	@authenticate
 	Future<UserImage> profile(String user_id) async =>
-		Serializable.of<UserImage>(await DataProvider.queryOne(ImageQuery.profile, values: {'user_id': user_id }));
+		Serializable.of<UserImage>(await DataProvider.queryOne(ImageQuery.profile, values: { 'user_id': user_id }));
 
 	@JSON
 	@GET('/user/:user_id')
 	@authenticate
 	Future<List<UserImage>>user(String user_id) async {
 		List<UserImage> images = [];
-		List<dynamic> result = (await DataProvider.query(ImageQuery.user, values: {'user_id':user_id}));
+		List<dynamic> result = (await DataProvider.query(ImageQuery.user, values: { 'user_id': user_id }));
 		await result.forEach((element) => images.add(Serializable.of<UserImage>(element.values.first)));
 		return images;
 	}

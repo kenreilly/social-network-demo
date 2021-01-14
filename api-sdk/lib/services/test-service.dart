@@ -1,11 +1,11 @@
-import 'package:api/framework/api-method.dart';
-import 'package:api/framework/api-service.dart';
+import 'package:api_sdk/framework/api-method.dart';
+import 'package:api_sdk/framework/api-service.dart';
 import 'package:core/models/test/test-model.dart';
 
 @RoutePath('/')
-class EchoService extends APIService {
+class TestService extends APIService {
 
-	EchoService(): super();
+	TestService(): super();
 
 	@JSON
 	@GET('/')

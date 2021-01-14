@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:core/core.dart';
-import 'package:api/framework/auth-provider.dart';
-import 'package:api/framework/data-provider.dart';
-import 'package:api/framework/api-method.dart';
-import 'package:api/framework/api-service.dart';
+import 'package:api_sdk/framework/auth-provider.dart';
+import 'package:api_sdk/framework/data-provider.dart';
+import 'package:api_sdk/framework/api-method.dart';
+import 'package:api_sdk/framework/api-service.dart';
 
 @RoutePath('/')
 class AuthService extends APIService {
