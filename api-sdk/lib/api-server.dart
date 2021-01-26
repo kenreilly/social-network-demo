@@ -37,5 +37,6 @@ class APIServer {
 		await _server.close();
 		_server = null;
 		_services.forEach((service) => service.dispose());
+		_services.clear();
 	}
 }

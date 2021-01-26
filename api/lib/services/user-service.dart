@@ -2,6 +2,7 @@ import 'package:api_sdk/framework/auth-provider.dart';
 import 'package:api_sdk/framework/api-method.dart';
 import 'package:api_sdk/framework/api-service.dart';
 import 'package:api_sdk/framework/data-provider.dart';
+import 'package:api_sdk/types/reflector.dart';
 import 'package:core/types/serializable.dart';
 import 'package:core/models/user.dart';
 
@@ -27,13 +28,13 @@ class UserService extends APIService {
 	@GET('/me')
 	@authenticate
 	Future<User>me({ AuthenticatedUser user }) async =>
-		Serializable.of<User>(await DataProvider.queryOne(UserQuery.find, values: {'id': user.id}));
+		Reflector.of<User>(await DataProvider.queryOne(UserQuery.find, values: {'id': user.id}));
 
 	@JSON
 	@GET('/:id')
 	@authenticate
 	Future<User>find(String id) async =>
-		Serializable.of<User>(await DataProvider.queryOne(UserQuery.find, values: {'id':id}));
+		Reflector.of<User>(await DataProvider.queryOne(UserQuery.find, values: {'id':id}));
 
 	@JSON
 	@POST('/')

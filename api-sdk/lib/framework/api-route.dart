@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:mirrors';
+import 'package:api_sdk/types/reflector.dart';
 import 'package:core/core.dart';
 import 'package:http_server/http_server.dart';
 import 'package:api_sdk/framework/auth-provider.dart';
@@ -25,8 +26,6 @@ class APIRoute {
 		{ 'content-type': (json == true ? 'application/json' : 'multipart/byteranges') };
 
 	static final JsonEncoder _encoder = const JsonEncoder();
-	static final JsonDecoder _decoder = const JsonDecoder();
-	static final Utf8Decoder _utfdecoder = const Utf8Decoder();
 
 	APIRoute(this.service, this.verb, this.route, this.method, { this.json = false }) {
 		components = RouteComponent.generate(route.path);
@@ -49,10 +48,6 @@ class APIRoute {
 	}
 
 	Future<dynamic> handle(HttpRequestBody session, { WebSocket socket }) async {
-
-		if (verb == 'WS') {
-			print(verb);
-		}
 
 		Map<Symbol, dynamic> params = {};
 		if (auth && method.parameters.where((p) => p.type.reflectedType == AuthenticatedUser).isNotEmpty) { 
@@ -100,7 +95,7 @@ class APIRoute {
 
 	dynamic _parse(Type t, dynamic val) {
 
-		if (Serializable.isSerializable(reflectClass(t))) return Serializable.cast(t, val);
+		if (Reflector.isSerializable(reflectClass(t))) return Reflector.cast(t, val);
 
 		switch (t) {
 			

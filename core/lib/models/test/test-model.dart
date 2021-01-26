@@ -8,7 +8,7 @@ class TestModel extends Serializable {
 	int i;
 	bool b;
 	
-	@override // todo: move to superclass
+	@override
 	bool operator ==(Object o) =>
 		(o is TestModel) && (s == o.s && i == o.i && b == o.b);
 

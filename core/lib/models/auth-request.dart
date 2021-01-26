@@ -5,7 +5,7 @@ import 'package:core/types/serializable.dart';
 class AuthRequest extends Serializable {
 
 	AuthRequest({ this.email, this.hashp }) : super();
-	
+
 	String email;
 	String hashp;
 

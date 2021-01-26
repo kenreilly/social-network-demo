@@ -2,8 +2,9 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:convert';
 import 'package:api_sdk/api-sdk.dart';
-import 'package:core/core.dart';
+import 'package:core/models/test/test-model.dart';
 import 'package:test/test.dart';
+import 'package:core/core.dart';
 
 abstract class SDKTestBase {
 
@@ -22,7 +23,7 @@ abstract class SDKTestBase {
 	
 	SDKTestBase(this.env, this.services);
 
-	void run();
+	Future<void> run();
 
 	void create() async { server = await APIServer.create(env, services); }
 	void startup() async { await server.start(); expect(server.host, isNotNull); }
