@@ -9,16 +9,16 @@ void main() async {
 
 	try { 
 		String env = (await File.fromUri(Uri.parse('.env')).exists()) ? '.env' : '.env.example';
-		SDKTestRunner runner = SDKTestRunner(env, [ TestService() ]);
+		SDKTest runner = SDKTest(env, [ TestService() ]);
 		await runner.run();
 		exit(0); // todo: what is keeping this process alive?
-	} 
+	}
 	catch (e) { print(e); }
 }
 
-class SDKTestRunner extends SDKTestBase {
+class SDKTest extends SDKTestBase {
 
-	SDKTestRunner(String env, List<ServiceBase> services) :super(env, services);
+	SDKTest(String env, List<ServiceBase> services) :super(env, services);
 
 	@override
 	Future<void> run() async {

@@ -6,21 +6,13 @@ import 'package:core/models/test/test-model.dart';
 import 'package:test/test.dart';
 import 'package:core/core.dart';
 
-abstract class SDKTestBase {
+abstract class SDKTestBase extends CoreTestBase {
 
 	APIServer server;
 	final HttpClient client = HttpClient();
-	final JsonEncoder enc = JsonEncoder();
-	final JsonDecoder dec = JsonDecoder();
 	final String env;
 	final List<ServiceBase> services;
 
-	static final Random rnd = Random();
-	static final List<int> _ascii = [97, 122]; // ascii charcode
-	static int get _next => (_ascii[0] + rnd.nextInt(_ascii[1] - _ascii[0]));
-	static String rstr(int len) => String.fromCharCodes(List.generate(len, (_) => _next));
-	final TestModel tmodel = TestModel(b: true, i: 1024, s: rstr(32));
-	
 	SDKTestBase(this.env, this.services);
 
 	Future<void> run();

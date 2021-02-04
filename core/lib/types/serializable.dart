@@ -1,6 +1,3 @@
-// import 'dart:mirrors';
-import 'package:core/core.dart';
-import 'package:core/types/decorator.dart';
 
 class Serializable<T> {
 
@@ -11,6 +8,3 @@ class Serializable<T> {
 	Map<String, dynamic> toJson() => toMap();
 	Map<String, dynamic> get data => toMap();
 }
-
-class Serialize extends Decorator { const Serialize(); }
-const serialize = Serialize();

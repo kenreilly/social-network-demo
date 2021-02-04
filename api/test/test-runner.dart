@@ -1,12 +1,10 @@
 import 'dart:io';
-import 'dart:math';
 import 'dart:convert';
 import 'package:api/services/auth-service.dart';
 import 'package:api/services/image-service.dart';
 import 'package:api/services/post-service.dart';
 import 'package:api/services/room-service.dart';
 import 'package:api/services/user-service.dart';
-import 'package:api/social-client-api.dart';
 import 'package:api_sdk/api-sdk.dart';
 import 'package:api_sdk/types/reflector.dart';
 import 'package:core/core.dart';
@@ -35,7 +33,7 @@ void main() async {
 
 class ClientAPITest extends SDKTestBase {
 
-	static String _rstr(int len) => SDKTestBase.rstr(len);
+	static String _rstr(int len) => CoreTestBase.rstr(len);
 	static String get _ruser => _rstr(10) + '@' + _rstr(10) + '.' + _rstr(3);
 	static String get _rpass => _rstr(16);
 	static String get _rname => _rstr(16);

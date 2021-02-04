@@ -1,12 +1,11 @@
+import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:api_sdk/framework/auth-provider.dart';
 import 'package:api_sdk/framework/data-provider.dart';
 import 'package:api_sdk/framework/api-method.dart';
 import 'package:api_sdk/framework/api-service.dart';
 import 'package:api_sdk/types/reflector.dart';
-import 'package:core/types/serializable.dart';
 import 'package:core/core.dart';
 
 abstract class RoomQuery {
