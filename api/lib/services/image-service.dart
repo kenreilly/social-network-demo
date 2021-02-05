@@ -3,6 +3,7 @@ import 'package:api_sdk/framework/auth-provider.dart';
 import 'package:api_sdk/framework/data-provider.dart';
 import 'package:api_sdk/framework/api-method.dart';
 import 'package:api_sdk/framework/api-service.dart';
+import 'package:api_sdk/types/reflector.dart';
 import 'package:core/types/serializable.dart';
 import 'package:core/models/image.dart';
 import 'package:core/models/user.dart';
@@ -34,13 +35,13 @@ class ImageService extends APIService {
 	@GET('/:id')
 	@authenticate
 	Future<UserImage> find(String id) async =>
-		Serializable.of<UserImage>(await DataProvider.queryOne(ImageQuery.find, values: { 'id': id }));
+		Reflector.of<UserImage>(await DataProvider.queryOne(ImageQuery.find, values: { 'id': id }));
 
 	@JSON
 	@GET('/profile/:user_id')
 	@authenticate
 	Future<UserImage> profile(String user_id) async =>
-		Serializable.of<UserImage>(await DataProvider.queryOne(ImageQuery.profile, values: { 'user_id': user_id }));
+		Reflector.of<UserImage>(await DataProvider.queryOne(ImageQuery.profile, values: { 'user_id': user_id }));
 
 	@JSON
 	@GET('/user/:user_id')
@@ -48,7 +49,7 @@ class ImageService extends APIService {
 	Future<List<UserImage>>user(String user_id) async {
 		List<UserImage> images = [];
 		List<dynamic> result = (await DataProvider.query(ImageQuery.user, values: { 'user_id': user_id }));
-		await result.forEach((element) => images.add(Serializable.of<UserImage>(element.values.first)));
+		await result.forEach((element) => images.add(Reflector.of<UserImage>(element.values.first)));
 		return images;
 	}
 

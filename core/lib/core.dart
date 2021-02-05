@@ -10,3 +10,4 @@ export 'models/post.dart';
 export 'models/user.dart';
 export 'models/room.dart';
 export 'hash.dart';
+export 'test/core-test-base.dart';

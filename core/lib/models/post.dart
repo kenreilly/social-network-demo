@@ -4,32 +4,48 @@ class Post extends Serializable {
 
 	Post({ this.id, this.user_id, this.image_id, this.content, this.create_timestamp });
 
-	@serialize
 	String id;
-	
-	@serialize
-	String user_id; 
-	
-	@serialize
+	String user_id;
 	String image_id;
-	
-	@serialize
 	String content;
-	
-	@serialize
-	String create_timestamp;
+	DateTime create_timestamp;
+
+	static Post fromMap(Map<String, dynamic> map) => Post(
+		id: map['id'],
+		user_id: map['user_id'],
+		image_id: map['image_id'],
+		content: map['content'],
+		create_timestamp: DateTime.parse(map['create_timestamp'])
+	);
+
+	@override
+	Map<String, dynamic> toMap() => {
+		'id': id,
+		'user_id': user_id,
+		'image_id': image_id,
+		'content': content,
+		'create_timestamp': create_timestamp == null ? null : create_timestamp.toIso8601String()
+	};
 }
 
 class NewPost extends Serializable {
 
 	NewPost({ this.user_id, this.image_id, this.content });
 
-	@serialize
 	String user_id;
-
-	@serialize
 	String image_id;
-
-	@serialize
 	String content;
+
+  	static NewPost fromMap(Map<String, dynamic> map) => NewPost(
+		user_id: map['user_id'],
+		image_id: map['image_id'],
+		content: map['content'],
+	);
+
+	@override
+	Map<String, dynamic> toMap() => {
+		'user_id': user_id,
+		'image_id': image_id,
+		'content': content
+	};
 }

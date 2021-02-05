@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:core';
 import 'dart:convert';
+import 'package:api_sdk/types/reflector.dart';
 import 'package:core/core.dart';
 import 'package:http_server/http_server.dart';
 import 'package:jaguar_jwt/jaguar_jwt.dart';
@@ -31,7 +32,7 @@ abstract class AuthProvider {
 			String token = reqbody.request.headers['Authorization'].first.replaceAll('Bearer ', '');
 			JwtClaim claim = verifyJwtHS256Signature(token, _secret);
 			claim.validate(issuer: _issuer, audience: _audience);
-			return Serializable.of<AuthenticatedUser>(_decoder.convert(claim.subject));
+			return Reflector.of<AuthenticatedUser>(_decoder.convert(claim.subject));
 		}
 		catch(e) {
 			throw Exception('Not Authorized');

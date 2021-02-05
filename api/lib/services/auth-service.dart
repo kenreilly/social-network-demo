@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:api_sdk/types/reflector.dart';
 import 'package:core/core.dart';
 import 'package:api_sdk/framework/auth-provider.dart';
 import 'package:api_sdk/framework/data-provider.dart';
@@ -23,7 +24,7 @@ class AuthService extends APIService {
 	dynamic _process(String json) {
 
 		Map<String, dynamic> data = _decoder.convert(json);
-		AuthenticatedUser user = Serializable.of<AuthenticatedUser>(data);
+		AuthenticatedUser user = Reflector.of<AuthenticatedUser>(data);
 		AuthProvider.tokenize(user);
 		return user.data;
 	}

@@ -1,3 +1,4 @@
+import 'package:api_sdk/types/reflector.dart';
 import 'package:core/core.dart';
 import 'package:api_sdk/framework/auth-provider.dart';
 import 'package:api_sdk/framework/data-provider.dart';
@@ -29,7 +30,7 @@ class PostService extends APIService {
 	@GET('/:id')
 	@authenticate
 	Future<Post>find(String id) async =>
-		Serializable.of<Post>(await DataProvider.queryOne(PostQuery.find, values: {'id':id}));
+		Reflector.of<Post>(await DataProvider.queryOne(PostQuery.find, values: {'id':id}));
 
 	@JSON
 	@GET('/user/:user_id')
@@ -37,7 +38,7 @@ class PostService extends APIService {
 	Future<List<Post>>user(String user_id) async {
 		List<Post> posts = [];
 		List<dynamic> result = (await DataProvider.query(PostQuery.user, values: {'user_id':user_id}));
-		await result.forEach((element) => posts.add(Serializable.of<Post>(element.values.first)));
+		await result.forEach((element) => posts.add(Reflector.of<Post>(element.values.first)));
 		return posts;
 	}
 

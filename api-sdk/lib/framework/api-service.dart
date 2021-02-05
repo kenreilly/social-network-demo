@@ -24,7 +24,6 @@ abstract class APIService extends ServiceBase {
 	static final List<APIRoute> _routes = [];
 
 	RoutePath _route = RoutePath('/');
-	VirtualDirectory vd;
 	
 	APIService(): super() {
 

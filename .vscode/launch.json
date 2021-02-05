@@ -4,20 +4,41 @@
 	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 	"version": "0.2.0",
 	"configurations": [
-		
 		{
-			"name": "api_test",
+			"name": "core test",
+			"program": "test",
+			"cwd": "core",
+			"request": "launch",
+			"type": "dart"
+		},
+		{
+			"name": "api test",
 			"program": "test",
 			"cwd": "api",
 			"request": "launch",
 			"type": "dart"
 		},
-		// {
-		// 	"name": "client",
-		// 	"cwd": "client",
-		// 	"request": "launch",
-		// 	"type": "dart"
-		// },
+		{
+			"name": "client",
+			"cwd": "client",
+			"request": "launch",
+			"type": "dart"
+		},
+		{
+			"name": "running-client",
+			"cwd": "client",
+			"request": "attach",
+			"type": "dart"
+		},
+		{
+			"name": "build",
+			"program": "pub",
+			"args": [ "run", "build_runner", "build"],
+			"cwd": "core",
+			"request": "launch",
+			"type": "dart",
+			// pub run build_runner build
+		}
 		// {
 		// 	"name": "core",
 		// 	"cwd": "core",
