@@ -1,6 +1,7 @@
 name: api_sdk
 description: A lean framework for social networks
 version: 1.0.0
+publish_to: none
 homepage: https://github.com/kenreilly/social-network-demo
 
 environment:
