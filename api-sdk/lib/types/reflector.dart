@@ -1,7 +1,7 @@
 import 'dart:mirrors';
 import 'package:core/types/serializable.dart';
 
-class Reflector {
+abstract class Reflector {
 
 	static MapEntry<Symbol, dynamic> _parse(VariableMirror d, Map<dynamic, dynamic> map) =>
 		MapEntry(d.simpleName, map[MirrorSystem.getName(d.simpleName)]);

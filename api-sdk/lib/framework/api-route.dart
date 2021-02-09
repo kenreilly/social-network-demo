@@ -2,12 +2,46 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:mirrors';
-import 'package:api_sdk/types/reflector.dart';
 import 'package:core/core.dart';
+import 'package:api_sdk/types/reflector.dart';
 import 'package:http_server/http_server.dart';
-import 'package:api_sdk/framework/auth-provider.dart';
-import 'package:api_sdk/framework/api-service.dart';
 import 'package:api_sdk/framework/api-method.dart';
+import 'package:api_sdk/framework/api-service.dart';
+import 'package:api_sdk/framework/auth-provider.dart';
+
+abstract class RouteComponent {
+
+	RouteComponent();
+
+	bool check(String part) => _test(part);
+	bool _test(String part);
+
+	static List<RouteComponent> generate(String path) => (path != '/')
+		? (path.split('/')..retainWhere((s) => s.isNotEmpty)).map((String p) => _create(p)).toList()
+		: [];
+
+	static RouteComponent _create(String part) => (part.contains(':'))
+		? RouteParameter(part.substring(1))
+		: RoutePoint(part);
+}
+
+class RoutePoint extends RouteComponent {
+
+	final String path;
+	RoutePoint(this.path) : super();
+
+	@override
+	bool _test(String part) => part == path;
+}
+
+class RouteParameter extends RouteComponent {
+
+	final String field;
+	RouteParameter(this.field) : super();
+
+	@override
+	bool _test(String part) => part.isNotEmpty;
+}
 
 class APIRoute {
 	
@@ -29,9 +63,7 @@ class APIRoute {
 
 	APIRoute(this.service, this.verb, this.route, this.method, { this.json = false }) {
 		components = RouteComponent.generate(route.path);
-		auth = method.metadata.where((InstanceMirror i) { 
-			return (i.reflectee is Authenticate);
-		}).isNotEmpty;
+		auth = method.metadata.where((InstanceMirror i) => (i.reflectee is Authenticate)).isNotEmpty;
 	}
 
 	bool check(HttpRequest request) {

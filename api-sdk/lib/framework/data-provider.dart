@@ -22,7 +22,7 @@ class DB {
 	Future<List<dynamic>> query(String sql, { Map<String, dynamic> values }) async {
 
 		try { return await _conn.mappedResultsQuery(sql, substitutionValues: values); }
-		catch(e) { return Future<List<dynamic>>.value(List<dynamic>(0)); }
+		catch(e) { return Future<List<dynamic>>.value([]); }
 	}
 
 	Future<void> flush() async {
@@ -43,6 +43,5 @@ abstract class DataProvider {
 	static Future<dynamic> queryOne(String sql, { Map<String, dynamic> values }) async =>
 		(await DataProvider.query(sql, values: values)).first.values.first;
 	
-	static Future<void> flush() => 
-		(_db != null) ? _db.flush() : Future.value(null);
+	static Future<void> flush() => (_db != null) ? _db.flush() : Future.value(null);
 }

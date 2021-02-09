@@ -1,4 +1,5 @@
 import 'package:api_sdk/framework/api-method.dart';
+import 'package:api_sdk/framework/api-route.dart';
 import 'package:api_sdk/framework/api-service.dart';
 import 'package:core/models/test/test-model.dart';
 
@@ -9,11 +10,11 @@ class TestService extends APIService {
 
 	@JSON
 	@GET('/')
-	Future<dynamic> echo() => Future.value('echo');
+	Future<String> echo() => Future.value('echo');
 
 	@JSON
 	@GET('/check/:a')
-	Future<dynamic> check(int a) => Future.value(a);
+	Future<int> check(int a) => Future.value(a);
 
 	@JSON
 	@POST('/test-model')
